@@ -2,7 +2,6 @@ package com.thomascookonline.datachallenge;
 
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
-import org.json.JSONObject;
 
 import java.io.*;
 import java.util.ArrayList;
