@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 
 public class JsonLogParser {
 
-    private List<String> jsonObjects = new ArrayList<String>();
+    private List<String> jsonObjects = new ArrayList<>();
 
     JsonLogParser(String filePath) throws IOException {
         BufferedReader br = new BufferedReader(new java.io.FileReader(filePath));
@@ -93,7 +93,6 @@ public class JsonLogParser {
 
             while ((thisLine = br.readLine()) != null) {
                 try {
-                    //JSONObject jsonObj = new JSONObject(thisLine);
                     jsonCount++;
                     DocumentContext jsonContext = JsonPath.parse(thisLine);
                     int branchValue = jsonContext.read(branch);
