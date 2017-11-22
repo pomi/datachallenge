@@ -50,7 +50,7 @@ public class JsonLogParser {
                 arrFNames = filename.split("\\\\");
                 shortFilename = arrFNames[arrFNames.length - 1];
                 for(String errorMessage : errorMessages){
-                    bw.write(shortFilename + "," + errorMessage);
+                    bw.write(shortFilename + ": " + errorMessage);
                     bw.newLine();
                 }
             }
@@ -107,7 +107,7 @@ public class JsonLogParser {
                     String urn = "urn:WR:" + branchValue + ":" + consultationReferenceValue.split("/")[1] + ":" + customerReferenceNumberValue;
                     String requestUrnValue = jsonContext.read(requestUrn);
                     if (!urn.equals(requestUrnValue)) {
-                        System.out.println(String.format("Items %s and %s are not equal", urn, requestUrnValue));
+                        //System.out.println(String.format("Items %s and %s are not equal", urn, requestUrnValue));
                         result.add(gbgIdValue + "," + urn + "," + requestUrnValue);
                         incorrectJson++;
                     }
