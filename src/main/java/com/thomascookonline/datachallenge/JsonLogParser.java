@@ -2,6 +2,7 @@ package com.thomascookonline.datachallenge;
 
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.PathNotFoundException;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -56,8 +57,8 @@ public class JsonLogParser {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println(numberOfIncorrectJsons);
-        System.out.println(numberOfJsons);
+        System.out.println("Total number of JSONs: " + numberOfJsons);
+        System.out.println("Wrongly mapped URNs: " + numberOfIncorrectJsons);
     }
 
     private static List<String> listFilesForFolder(final File folder) {
@@ -79,19 +80,23 @@ public class JsonLogParser {
     private static Map<String, Object> checkFileForErrors(String fileName) {
         Map<String,Object> results = new HashMap<>();
         List<String> result = new ArrayList<>();
-        String branch = "$['customer']['identity']['branchBudgetCentre']";
+        String gbgCustomerId = "$.customer.identity.customerID";
+        String branch = "$.customer.identity.branchBudgetCentre";
         String consultationReference = "$.consultation.reference";
         String customerReferenceNumber = "$.customer.identity.customerReferenceNumber";
         String requestUrn = "$.customer.identity.capture.urn";
-        String gbgCustomerId = "$.customer.identity.customerID";
         String thisLine;
-        String previousLine = "";
         long incorrectJson = 0;
         long jsonCount = 0;
         try {
             BufferedReader br = new BufferedReader(new java.io.FileReader(fileName));
 
             while ((thisLine = br.readLine()) != null) {
+                if (thisLine.endsWith("Request JSON:")) {
+                    thisLine = br.readLine();
+                } else {
+                    continue;
+                }
                 try {
                     jsonCount++;
                     DocumentContext jsonContext = JsonPath.parse(thisLine);
@@ -102,17 +107,12 @@ public class JsonLogParser {
                     String urn = "urn:WR:" + branchValue + ":" + consultationReferenceValue.split("/")[1] + ":" + customerReferenceNumberValue;
                     String requestUrnValue = jsonContext.read(requestUrn);
                     if (!urn.equals(requestUrnValue)) {
-                        if(previousLine.contains("Request JSON:")) {
-                            System.out.println(thisLine);
-                            System.out.println(String.format("Items %s and %s are not equal", urn, requestUrnValue));
-                            result.add(gbgIdValue + "," + urn + "," + requestUrnValue);
-                        }
+                        System.out.println(String.format("Items %s and %s are not equal", urn, requestUrnValue));
+                        result.add(gbgIdValue + "," + urn + "," + requestUrnValue);
                         incorrectJson++;
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                } catch (PathNotFoundException e) {
                 }
-                previousLine = thisLine;
             }
         } catch (Exception e) {
             e.printStackTrace();
