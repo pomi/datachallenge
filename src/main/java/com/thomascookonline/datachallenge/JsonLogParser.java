@@ -33,7 +33,7 @@ public class JsonLogParser {
 
     public static void main(String[] args) {
         if (args.length != 1) {
-            System.out.println("");
+            System.out.println("Usage: JsonLogParser <path_to_debug_logs>");
             System.exit(0);
         }
 
@@ -42,7 +42,7 @@ public class JsonLogParser {
         String[] arrFNames;
         String shortFilename;
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("wrong_urns.csv"))) {
-            for(String filename : listFilesForFolder(new File(args[0]))){
+            for (String filename : listFilesForFolder(new File(args[0]))) {
                 HashMap<String, Object> results = (HashMap<String, Object>) checkFileForErrors(filename);
                 List<String> errorMessages = (List<String>) results.get("listOfErrors");
                 numberOfJsons += (long)results.get("numberOfJSons");
