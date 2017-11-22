@@ -19,6 +19,18 @@ public class JsonLogParser {
         return jsonObjects;
     }
 
+    JsonLogParser(String filePath) throws IOException {
+        BufferedReader br = new BufferedReader(new java.io.FileReader(filePath));
+        String thisLine;
+        while ((thisLine = br.readLine()) != null) {
+            try {
+                jsonObjects.add(thisLine);
+            } catch (Exception e) {
+                Logger.getAnonymousLogger().info("Row is not a JSON");
+            }
+        }
+    }
+
     public static void main(String[] args) {
         if (args.length != 1) {
             System.out.println("Usage: JsonLogParser <path_to_debug_logs>");
