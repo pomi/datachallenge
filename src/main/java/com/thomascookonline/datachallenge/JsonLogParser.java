@@ -15,18 +15,6 @@ public class JsonLogParser {
 
     private List<String> jsonObjects = new ArrayList<>();
 
-    JsonLogParser(String filePath) throws IOException {
-        BufferedReader br = new BufferedReader(new java.io.FileReader(filePath));
-        String thisLine;
-        while ((thisLine = br.readLine()) != null) {
-            try {
-                jsonObjects.add(thisLine);
-            } catch (Exception e) {
-                Logger.getAnonymousLogger().info("Row is not a JSON");
-            }
-        }
-    }
-
     List<String> getJsonObjects() {
         return jsonObjects;
     }
@@ -112,6 +100,7 @@ public class JsonLogParser {
                         incorrectJson++;
                     }
                 } catch (PathNotFoundException e) {
+                    System.out.println("Parsing error: " + e.getLocalizedMessage());
                 }
             }
         } catch (Exception e) {
