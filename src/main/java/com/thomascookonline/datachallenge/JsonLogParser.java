@@ -38,6 +38,7 @@ public class JsonLogParser {
         }
 
         long numberOfJsons = 0;
+        long numberOfCorrectJsons = 0;
         long numberOfIncorrectJsons = 0;
         String[] arrFNames;
         String shortFilename;
@@ -45,7 +46,8 @@ public class JsonLogParser {
             for (String filename : listFilesForFolder(new File(args[0]))) {
                 HashMap<String, Object> results = (HashMap<String, Object>) checkFileForErrors(filename);
                 List<String> errorMessages = (List<String>) results.get("listOfErrors");
-                numberOfJsons += (long)results.get("numberOfJSons");
+                numberOfJsons += (long)results.get("numberOfJsons");
+                numberOfCorrectJsons += (long)results.get("numberOfCorrectJson");
                 numberOfIncorrectJsons += (long)results.get("numberOfErrorJson");
                 arrFNames = filename.split("\\\\");
                 shortFilename = arrFNames[arrFNames.length - 1];
@@ -58,6 +60,7 @@ public class JsonLogParser {
             e.printStackTrace();
         }
         System.out.println("Total number of JSONs: " + numberOfJsons);
+        System.out.println("Correctly mapped URNs: " + numberOfCorrectJsons);
         System.out.println("Wrongly mapped URNs: " + numberOfIncorrectJsons);
     }
 
@@ -86,8 +89,9 @@ public class JsonLogParser {
         String customerReferenceNumber = "$.customer.identity.customerReferenceNumber";
         String requestUrn = "$.customer.identity.capture.urn";
         String thisLine;
-        long incorrectJson = 0;
         long jsonCount = 0;
+        long correctJson = 0;
+        long incorrectJson = 0;
         try {
             BufferedReader br = new BufferedReader(new java.io.FileReader(fileName));
 
@@ -103,10 +107,22 @@ public class JsonLogParser {
                     int branchValue = jsonContext.read(branch);
                     String consultationReferenceValue = jsonContext.read(consultationReference);
                     int customerReferenceNumberValue = jsonContext.read(customerReferenceNumber);
-                    String gbgIdValue = jsonContext.read(gbgCustomerId);
+                    String gbgIdValue;
+                    try {
+                        gbgIdValue = jsonContext.read(gbgCustomerId);
+                    } catch (PathNotFoundException e) {
+                        gbgIdValue = "<missing>";
+                    }
                     String urn = "urn:WR:" + branchValue + ":" + consultationReferenceValue.split("/")[1] + ":" + customerReferenceNumberValue;
-                    String requestUrnValue = jsonContext.read(requestUrn);
-                    if (!urn.equals(requestUrnValue)) {
+                    String requestUrnValue;
+                    try {
+                        requestUrnValue = jsonContext.read(requestUrn);
+                    } catch (PathNotFoundException e) {
+                        requestUrnValue = "<how-come!?>";
+                    }
+                    if (urn.equals(requestUrnValue)) {
+                        correctJson++;
+                    } else {
                         //System.out.println(String.format("Items %s and %s are not equal", urn, requestUrnValue));
                         result.add(gbgIdValue + "," + urn + "," + requestUrnValue);
                         incorrectJson++;
@@ -119,7 +135,8 @@ public class JsonLogParser {
             e.printStackTrace();
         }
         results.put("listOfErrors", result);
-        results.put("numberOfJSons", jsonCount);
+        results.put("numberOfJsons", jsonCount);
+        results.put("numberOfCorrectJson", correctJson);
         results.put("numberOfErrorJson", incorrectJson);
         return results;
     }
