@@ -11,12 +11,12 @@ import java.util.logging.Logger;
 
 class JsonLogParserTest {
 
-    private static JsonLogParser jsonLogParser;
+    private static JsonCustLogParser jsonCustLogParser;
 
     @BeforeAll
     static void init(){
         try {
-            jsonLogParser = new JsonLogParser("src\\test\\resources\\crm-xcom-2017-10-04-1.log");
+            jsonCustLogParser = new JsonCustLogParser("src\\test\\resources\\crm-xcom-2017-10-04-1.log");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -26,7 +26,7 @@ class JsonLogParserTest {
     void checkJsonForUrn(){
 
         String jsonpathCaptureUrnPath = "$..capture.urn";
-        for(String jsonObject : jsonLogParser.getJsonObjects()){
+        for(String jsonObject : jsonCustLogParser.getJsonObjects()){
             //Logger.getAnonymousLogger().info(jsonObject);
             DocumentContext jsonContext = JsonPath.parse(jsonObject);
             List<String> jsonpathCaptureUrn = jsonContext.read(jsonpathCaptureUrnPath);

@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-public class JsonLogParser {
+public class JsonCustLogParser {
 
     private List<String> jsonObjects = new ArrayList<>();
 
@@ -19,7 +19,7 @@ public class JsonLogParser {
         return jsonObjects;
     }
 
-    JsonLogParser(String filePath) throws IOException {
+    JsonCustLogParser(String filePath) throws IOException {
         BufferedReader br = new BufferedReader(new java.io.FileReader(filePath));
         String thisLine;
         while ((thisLine = br.readLine()) != null) {
@@ -33,7 +33,7 @@ public class JsonLogParser {
 
     public static void main(String[] args) {
         if (args.length != 1) {
-            System.out.println("Usage: JsonLogParser <path_to_debug_logs>");
+            System.out.println("Usage: JsonCustLogParser <path_to_debug_logs>");
             System.exit(0);
         }
 
