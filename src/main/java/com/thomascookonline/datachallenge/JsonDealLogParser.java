@@ -106,7 +106,8 @@ public class JsonDealLogParser {
                     jsonCount++;
                     DocumentContext jsonContext = JsonPath.parse(thisLine);
                     String consultationReferenceValue = jsonContext.read(consultationReference);
-                    String gbgIdValue, dealSeqNoValue, requestUrnValue;
+                    String gbgIdValue, requestUrnValue;
+                    Integer dealSeqNoValue = -1;
                     try {
                         gbgIdValue = jsonContext.read(gbgCustomerId);
                     } catch (PathNotFoundException e) {
@@ -120,11 +121,10 @@ public class JsonDealLogParser {
                             dealSeqNoValue = jsonContext.read(enquiriesDealSeqNum);
                             requestUrnValue = jsonContext.read(reqEnquiriesDeal0Urn);
                         } catch (PathNotFoundException e2) {
-                            dealSeqNoValue = "<skip>";
                             requestUrnValue = "<how-come!?>";
                         }
                     }
-                    if ("<skip>".equals(dealSeqNoValue)) {
+                    if (dealSeqNoValue == -1) {
                         continue;
                     }
                     String urn = "urn:WR:" + consultationReferenceValue.replace("/", ":") + ":deal:" + dealSeqNoValue;
